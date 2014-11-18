@@ -1,28 +1,20 @@
 package spark
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type AccessToken struct {
-	TokenValue string `json:"token"`
-	ExpiresAt  string `json:"expires_at"`
-	Client     string `json:"client"`
+	TokenValue string    `json:"token"`
+	ExpiresAt  time.Time `json:"expires_at"`
+	Client     string    `json:"client"`
 }
 
 func NewAccessToken() *AccessToken {
 	aToken := &AccessToken{}
 	return aToken
 }
-
-type AccessTokenList struct {
-	Tokens []*AccessToken
-}
-
-func NewAccessTokenList() *AccessTokenList {
-	aTokenList := &AccessTokenList{}
-	aTokenList.Tokens = []*AccessToken{}
-	return aTokenList
-}
-
 func (t *AccessToken) Valid() error {
 
 	if len(t.TokenValue) == 0 {

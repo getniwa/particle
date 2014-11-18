@@ -5,6 +5,7 @@ import "fmt"
 const (
 	GRANT_TYPE                 = "password"
 	EXPECTED_ACCESS_TOKEN_TYPE = "bearer"
+	DEFAULT_TOKEN_CLIENT       = "spark"
 	EXPIRY_TIME_THRESHOLD      = 10
 )
 

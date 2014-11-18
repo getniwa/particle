@@ -2,6 +2,11 @@ package spark
 
 import "testing"
 
+const (
+	ExampleVariable = "version"
+	ExampleFunc     = "toggleLamp"
+)
+
 func Test_GetVariable(t *testing.T) {
 
 	core := NewCore(CoreID)
@@ -12,9 +17,7 @@ func Test_GetVariable(t *testing.T) {
 		t.Error(err)
 	}
 
-	//defer aTokenService.DeleteAccessToken(token)
-
-	if _, err := core.Get("version", token); err != nil {
+	if _, err := core.Get(ExampleVariable, token); err != nil {
 		t.Error(err)
 	}
 }
@@ -29,9 +32,7 @@ func Test_CallFunc(t *testing.T) {
 		t.Error(err)
 	}
 
-	//defer aTokenService.DeleteAccessToken(token)
-
-	if _, err := core.Call("toggleLamp", token, 1, 2); err != nil {
+	if _, err := core.Call(ExampleFunc, token, 1, 2); err != nil {
 		t.Error(err)
 	}
 }

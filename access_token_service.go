@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 // AccessTokenService is an entrypoint for any AccessToken related operation.
 type AccessTokenService struct {
 	OaRequest *OAuthRequest
 	Token     *AccessToken
-	TokenList *AccessTokenList
 }
 
 // Expected response from a delete-access-token request
@@ -28,14 +28,64 @@ func NewAccessTokenService(username, password string) *AccessTokenService {
 
 	aTokenService := &AccessTokenService{}
 	aTokenService.OaRequest = NewOAuthRequest(username, password)
-	aTokenService.Token = NewAccessToken()
-	aTokenService.TokenList = NewAccessTokenList()
 
 	return aTokenService
 }
 
+// Fetch the current access token, if it's available and not expired.
+// If not, look in the list of existing tokens. If that fails, create a
+// new one.
+//
+func (s *AccessTokenService) GetAccessToken() (AuthToken, error) {
+
+	if s.Token != nil {
+		// Check to see if it has expired
+		if s.Token.ExpiresAt.After(time.Now()) {
+			return s.Token, nil
+		}
+	}
+
+	// Otherwise, check the list
+	list, err := s.ListAllAccessTokens()
+
+	if err != nil {
+		return nil, fmt.Errorf("[GetAccessToken]: ListAllAccessTokens failed (%s)", err)
+	}
+
+	for _, token := range list {
+
+		// Only use 'spark' token
+		if token.Client != DEFAULT_TOKEN_CLIENT {
+			continue
+		}
+
+		if token.ExpiresAt.After(time.Now()) {
+
+			// Store the token
+			s.Token = token
+
+			// Return the pointer
+			return s.Token, nil
+		}
+	}
+
+	// Finally, if it's not anywhere, create a new one
+	s.Token = &AccessToken{}
+	response, err2 := s.CreateAccessToken()
+
+	if err2 != nil {
+		return nil, fmt.Errorf("[CreateAccessToken]: ListAllAccessTokens failed (%s)", err2)
+	}
+
+	s.Token.TokenValue = response.AccessToken
+	s.Token.ExpiresAt = time.Now().Add(time.Duration(response.ExpiresIn) * time.Second)
+	s.Token.Client = DEFAULT_TOKEN_CLIENT
+
+	return s.Token, nil
+}
+
 // Returns an AccessToken in the form of a OAuthResponse object.
-func (s *AccessTokenService) GetAccessToken() (*OAuthResponse, error) {
+func (s *AccessTokenService) CreateAccessToken() (*OAuthResponse, error) {
 
 	urlStr := Endpoint(
 		&APIUrl{
@@ -79,7 +129,7 @@ func (s *AccessTokenService) GetAccessToken() (*OAuthResponse, error) {
 	return oauthResp, nil
 }
 
-func (s *AccessTokenService) ListAllAccessTokens() (*AccessTokenList, error) {
+func (s *AccessTokenService) ListAllAccessTokens() ([]*AccessToken, error) {
 
 	urlStr := Endpoint(&APIUrl{BaseUrl, APIVersion, "/access_tokens"})
 
@@ -99,13 +149,14 @@ func (s *AccessTokenService) ListAllAccessTokens() (*AccessTokenList, error) {
 
 	defer resp.Body.Close()
 
-	s.TokenList = NewAccessTokenList()
+	// Create an access token slice
+	tokens := make([]*AccessToken, 0)
 
-	if err = json.NewDecoder(resp.Body).Decode(&s.TokenList.Tokens); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&tokens); err != nil {
 		return nil, err
 	}
 
-	return s.TokenList, nil
+	return tokens, nil
 }
 
 func (s *AccessTokenService) DeleteAccessToken(a AuthToken) (*DeleteAccessTokenResponse, error) {
