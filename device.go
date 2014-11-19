@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-type Core struct {
+type Device struct {
 	ID string
 }
 
 // Create a new core instance
-func NewCore(id string) *Core {
+func NewDevice(id string) *Device {
 
-	c := &Core{}
+	c := &Device{}
 
 	c.ID = id
 
@@ -23,7 +23,7 @@ func NewCore(id string) *Core {
 }
 
 // Get a variable from the Spark Cloud
-func (c *Core) Get(name string, auth_token AuthToken) (*VariableResponse, error) {
+func (c *Device) Get(name string, auth_token AuthToken) (*VariableResponse, error) {
 
 	// Try and generate a token
 	token, err := auth_token.Token()
@@ -73,7 +73,7 @@ func (c *Core) Get(name string, auth_token AuthToken) (*VariableResponse, error)
 	return &response.VariableResponse, nil
 }
 
-func (c *Core) Call(name string, auth_token AuthToken, args ...interface{}) (*FunctionResponse, error) {
+func (c *Device) Call(name string, auth_token AuthToken, args ...interface{}) (*FunctionResponse, error) {
 
 	// Try and generate a token
 	token, err := auth_token.Token()
@@ -132,7 +132,7 @@ func (c *Core) Call(name string, auth_token AuthToken, args ...interface{}) (*Fu
 
 }
 
-func (c *Core) requestURL(terminus, token string) string {
+func (c *Device) requestURL(terminus, token string) string {
 
 	return Endpoint(&APIUrl{
 		BaseUrl,

@@ -9,7 +9,7 @@ const (
 
 func Test_GetVariable(t *testing.T) {
 
-	core := NewCore(CoreID)
+	core := NewDevice(CoreID)
 
 	token, err := aTokenService.GetAccessToken()
 
@@ -24,7 +24,7 @@ func Test_GetVariable(t *testing.T) {
 
 func Test_CallFunc(t *testing.T) {
 
-	core := NewCore(CoreID)
+	core := NewDevice(CoreID)
 
 	token, err := aTokenService.GetAccessToken()
 
