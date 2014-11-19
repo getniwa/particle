@@ -2,5 +2,9 @@ package spark
 
 type AuthToken interface {
 	Valid() error
-	Token() (string, error)
+	String() string
+}
+
+type AuthTokenProvider interface {
+	AuthToken() (AuthToken, error)
 }

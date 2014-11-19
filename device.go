@@ -9,10 +9,18 @@ import (
 )
 
 type Device struct {
-	ID    string
-	Token AuthToken
+	ID           string            `json:"id"`
+	Name         string            `json:"name"`
+	Connected    bool              `json:"connected"`
+	Variables    map[string]string `json:"variables"`
+	Functions    []string          `json:"functions"`
+	PatchVersion string            `json:"cc3000_patch_version"`
+
+	AuthTokenProvider AuthTokenProvider `json:"-"`
+	Token             AuthToken         `json:"-"`
 }
 
+// A variadiac configuration function for device object instantiation
 type DeviceConfiguration func(*Device) error
 
 // Create a new core instance
@@ -44,22 +52,54 @@ func DeviceAuthToken(token AuthToken) DeviceConfiguration {
 	}
 }
 
+// Add an auth token provider (AccessTokenSerive or AuthToken) to
+// a device object
+//
+func DeviceAuthTokenProvider(provider AuthTokenProvider) DeviceConfiguration {
+
+	return func(d *Device) error {
+		d.AuthTokenProvider = provider
+		return nil
+	}
+}
+
 ///////////////////////////////////////////////////////////////
 // API methods
 ///////////////////////////////////////////////////////////////
 
 // Get a variable from the Spark Cloud
-func (c *Device) GetWithToken(name string, auth_token AuthToken) (*VariableResponse, error) {
+func (d *Device) Get(name string) (*VariableResponse, error) {
 
-	// Try and generate a token
-	token, err := auth_token.Token()
+	var token AuthToken
+	var err error
 
-	if err != nil {
+	if d.AuthTokenProvider != nil {
+		token, err = d.AuthTokenProvider.AuthToken()
+
+		if err != nil {
+			return nil, err
+		}
+
+	} else if d.Token != nil {
+		token = d.Token
+	}
+
+	if token == nil {
+		return nil, fmt.Errorf("No access token or provider set")
+	}
+
+	return d.GetWithToken(name, token)
+}
+
+// Get a variable from the Spark Cloud using an auth token
+func (c *Device) GetWithToken(name string, token AuthToken) (*VariableResponse, error) {
+
+	if err := token.Valid(); err != nil {
 		return nil, err
 	}
 
 	// Get the final request URL
-	url := c.requestURL(name, token)
+	url := c.requestURL(name, token.String())
 
 	// Create a client request
 	req, err := http.NewRequest("GET", url, nil)
@@ -99,17 +139,39 @@ func (c *Device) GetWithToken(name string, auth_token AuthToken) (*VariableRespo
 	return &response.VariableResponse, nil
 }
 
-func (c *Device) CallWithToken(name string, auth_token AuthToken, args ...interface{}) (*FunctionResponse, error) {
+// Get a variable from the Spark Cloud
+func (d *Device) Call(name string, args ...interface{}) (*FunctionResponse, error) {
 
-	// Try and generate a token
-	token, err := auth_token.Token()
+	var token AuthToken
+	var err error
 
-	if err != nil {
+	if d.AuthTokenProvider != nil {
+		token, err = d.AuthTokenProvider.AuthToken()
+
+		if err != nil {
+			return nil, err
+		}
+
+	} else if d.Token != nil {
+		token = d.Token
+	}
+
+	if token == nil {
+		return nil, fmt.Errorf("No access token or provider set")
+	}
+
+	return d.CallWithToken(name, token, args...)
+}
+
+// Call a function on the device using an auth token
+func (c *Device) CallWithToken(name string, token AuthToken, args ...interface{}) (*FunctionResponse, error) {
+
+	if err := token.Valid(); err != nil {
 		return nil, err
 	}
 
 	// Get the final request URL
-	uri := c.requestURL(name, token)
+	uri := c.requestURL(name, token.String())
 
 	// A form values container
 	form := url.Values{}

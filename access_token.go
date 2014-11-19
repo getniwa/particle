@@ -24,11 +24,15 @@ func (t *AccessToken) Valid() error {
 	return nil
 }
 
-func (t *AccessToken) Token() (string, error) {
+func (t *AccessToken) String() string {
+	return t.TokenValue
+}
+
+func (t *AccessToken) AuthToken() (AuthToken, error) {
 
 	if err := t.Valid(); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return t.TokenValue, nil
+	return t, nil
 }

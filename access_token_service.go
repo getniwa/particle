@@ -36,7 +36,7 @@ func NewAccessTokenService(username, password string) *AccessTokenService {
 // If not, look in the list of existing tokens. If that fails, create a
 // new one.
 //
-func (s *AccessTokenService) GetAccessToken() (AuthToken, error) {
+func (s *AccessTokenService) AuthToken() (AuthToken, error) {
 
 	if s.Token != nil {
 		// Check to see if it has expired
@@ -161,13 +161,11 @@ func (s *AccessTokenService) ListAllAccessTokens() ([]*AccessToken, error) {
 
 func (s *AccessTokenService) DeleteAccessToken(a AuthToken) (*DeleteAccessTokenResponse, error) {
 
-	token, err := a.Token()
-
-	if err != nil {
+	if err := a.Valid(); err != nil {
 		return nil, err
 	}
 
-	ep := "/access_tokens/" + token
+	ep := "/access_tokens/" + a.String()
 	urlStr := Endpoint(&APIUrl{BaseUrl, APIVersion, ep})
 
 	req, err := http.NewRequest("DELETE", urlStr, nil)

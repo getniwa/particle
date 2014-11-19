@@ -49,11 +49,15 @@ func (t *OAuthResponse) Valid() error {
 	return nil
 }
 
-func (t *OAuthResponse) Token() (string, error) {
+func (t *OAuthResponse) String() string {
+	return t.AccessToken
+}
+
+func (t *OAuthResponse) AuthToken() (AuthToken, error) {
 
 	if err := t.Valid(); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return t.AccessToken, nil
+	return t, nil
 }

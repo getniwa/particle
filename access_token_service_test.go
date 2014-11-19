@@ -6,7 +6,7 @@ var aTokenService = NewAccessTokenService(UserName, Password)
 
 func Test_GetAccessTokenHappyPath(t *testing.T) {
 
-	if _, err := aTokenService.GetAccessToken(); err != nil {
+	if _, err := aTokenService.AuthToken(); err != nil {
 		t.Fatalf("Can't get access token: %s", err)
 	}
 }
@@ -42,7 +42,7 @@ func Test_GetAccessTokenSadPath(t *testing.T) {
 
 	badTokenService := NewAccessTokenService("Invalid-username", "Wrong-password")
 
-	if _, err := badTokenService.GetAccessToken(); err == nil {
+	if _, err := badTokenService.AuthToken(); err == nil {
 		t.Fatalf("Expected token service failure, got success")
 	}
 }
