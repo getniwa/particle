@@ -7,9 +7,13 @@ const (
 	ExampleFunc     = "toggleLamp"
 )
 
-func Test_GetVariable(t *testing.T) {
+func Test_GetVariableExplicitToken(t *testing.T) {
 
-	core := NewDevice(CoreID)
+	core, creation_error := NewDevice(CoreID)
+
+	if creation_error != nil {
+		t.Fatalf("NewDevice: %s", creation_error)
+	}
 
 	token, err := aTokenService.GetAccessToken()
 
@@ -17,14 +21,18 @@ func Test_GetVariable(t *testing.T) {
 		t.Error(err)
 	}
 
-	if _, err := core.Get(ExampleVariable, token); err != nil {
+	if _, err := core.GetWithToken(ExampleVariable, token); err != nil {
 		t.Error(err)
 	}
 }
 
-func Test_CallFunc(t *testing.T) {
+func Test_CallFuncExplicitToken(t *testing.T) {
 
-	core := NewDevice(CoreID)
+	core, creation_error := NewDevice(CoreID)
+
+	if creation_error != nil {
+		t.Fatalf("NewDevice: %s", creation_error)
+	}
 
 	token, err := aTokenService.GetAccessToken()
 
@@ -32,7 +40,7 @@ func Test_CallFunc(t *testing.T) {
 		t.Error(err)
 	}
 
-	if _, err := core.Call(ExampleFunc, token, 1, 2); err != nil {
+	if _, err := core.CallWithToken(ExampleFunc, token, 1, 2); err != nil {
 		t.Error(err)
 	}
 }

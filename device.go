@@ -9,21 +9,47 @@ import (
 )
 
 type Device struct {
-	ID string
+	ID    string
+	Token AuthToken
 }
+
+type DeviceConfiguration func(*Device) error
 
 // Create a new core instance
-func NewDevice(id string) *Device {
+func NewDevice(id string, configs ...DeviceConfiguration) (*Device, error) {
 
-	c := &Device{}
+	d := &Device{}
 
-	c.ID = id
+	d.ID = id
 
-	return c
+	for _, config := range configs {
+		if err := config(d); err != nil {
+			return nil, err
+		}
+	}
+
+	return d, nil
 }
 
+///////////////////////////////////////////////////////////////
+// Configuration functions
+///////////////////////////////////////////////////////////////
+
+// Add an auth token to a device object
+func DeviceAuthToken(token AuthToken) DeviceConfiguration {
+
+	return func(d *Device) error {
+		d.Token = token
+		return nil
+	}
+}
+
+///////////////////////////////////////////////////////////////
+// API methods
+///////////////////////////////////////////////////////////////
+
 // Get a variable from the Spark Cloud
-func (c *Device) Get(name string, auth_token AuthToken) (*VariableResponse, error) {
+func (c *Device) GetWithToken(name string, auth_token AuthToken) (*VariableResponse, error) {
 
 	// Try and generate a token
 	token, err := auth_token.Token()
@@ -73,7 +99,7 @@ func (c *Device) Get(name string, auth_token AuthToken) (*VariableResponse, erro
 	return &response.VariableResponse, nil
 }
 
-func (c *Device) Call(name string, auth_token AuthToken, args ...interface{}) (*FunctionResponse, error) {
+func (c *Device) CallWithToken(name string, auth_token AuthToken, args ...interface{}) (*FunctionResponse, error) {
 
 	// Try and generate a token
 	token, err := auth_token.Token()
