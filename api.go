@@ -14,6 +14,6 @@ type APIUrl struct {
 	Endpoint   string
 }
 
-func Endpoint(a *APIUrl) string {
+func (a APIUrl) String() string {
 	return a.BaseUrl + a.APIVersion + a.Endpoint
 }

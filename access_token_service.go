@@ -87,18 +87,17 @@ func (s *AccessTokenService) AuthToken() (AuthToken, error) {
 // Returns an AccessToken in the form of a OAuthResponse object.
 func (s *AccessTokenService) CreateAccessToken() (*OAuthResponse, error) {
 
-	urlStr := Endpoint(
-		&APIUrl{
-			BaseUrl:  BaseUrl,
-			Endpoint: "/oauth/token"},
-	)
+	uri := APIUrl{
+		BaseUrl:  BaseUrl,
+		Endpoint: "/oauth/token",
+	}
 
 	form := url.Values{}
 	form.Set("grant_type", s.OaRequest.GrantType)
 	form.Set("username", s.OaRequest.UserName)
 	form.Set("password", s.OaRequest.Password)
 
-	req, err := http.NewRequest("POST", urlStr, strings.NewReader(form.Encode()))
+	req, err := http.NewRequest("POST", uri.String(), strings.NewReader(form.Encode()))
 
 	if err != nil {
 		return nil, err
@@ -131,9 +130,9 @@ func (s *AccessTokenService) CreateAccessToken() (*OAuthResponse, error) {
 
 func (s *AccessTokenService) ListAllAccessTokens() ([]*AccessToken, error) {
 
-	urlStr := Endpoint(&APIUrl{BaseUrl, APIVersion, "/access_tokens"})
+	url := &APIUrl{BaseUrl, APIVersion, "/access_tokens"}
 
-	req, err := http.NewRequest("GET", urlStr, nil)
+	req, err := http.NewRequest("GET", url.String(), nil)
 
 	if err != nil {
 		return nil, err
@@ -166,9 +165,9 @@ func (s *AccessTokenService) DeleteAccessToken(a AuthToken) (*DeleteAccessTokenR
 	}
 
 	ep := "/access_tokens/" + a.String()
-	urlStr := Endpoint(&APIUrl{BaseUrl, APIVersion, ep})
+	uri := &APIUrl{BaseUrl, APIVersion, ep}
 
-	req, err := http.NewRequest("DELETE", urlStr, nil)
+	req, err := http.NewRequest("DELETE", uri.String(), nil)
 	if err != nil {
 		return nil, err
 	}

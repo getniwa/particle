@@ -64,20 +64,16 @@ func DeviceAuthTokenProvider(provider AuthTokenProvider) DeviceConfiguration {
 }
 
 ///////////////////////////////////////////////////////////////
-// API methods
+// Private methods
 ///////////////////////////////////////////////////////////////
 
-// Get a variable from the Spark Cloud
-func (d *Device) Get(name string) (*VariableResponse, error) {
-
-	var token AuthToken
-	var err error
+func (d *Device) token() (token AuthToken, err error) {
 
 	if d.AuthTokenProvider != nil {
 		token, err = d.AuthTokenProvider.AuthToken()
 
 		if err != nil {
-			return nil, err
+			return
 		}
 
 	} else if d.Token != nil {
@@ -86,6 +82,33 @@ func (d *Device) Get(name string) (*VariableResponse, error) {
 
 	if token == nil {
 		return nil, fmt.Errorf("No access token or provider set")
+	}
+
+	return
+}
+
+func (c *Device) requestURL(terminus, token string) string {
+
+	url := &APIUrl{
+		BaseUrl,
+		APIVersion,
+		"/devices/" + c.ID + "/" + terminus + "?access_token=" + token,
+	}
+
+	return url.String()
+}
+
+///////////////////////////////////////////////////////////////
+// API methods
+///////////////////////////////////////////////////////////////
+
+// Get a variable from the Spark Cloud
+func (d *Device) Get(name string) (*VariableResponse, error) {
+
+	token, err := d.token()
+
+	if err != nil {
+		return nil, fmt.Errorf("[Device.Get] Token error: %s", err)
 	}
 
 	return d.GetWithToken(name, token)
@@ -142,22 +165,10 @@ func (c *Device) GetWithToken(name string, token AuthToken) (*VariableResponse, 
 // Get a variable from the Spark Cloud
 func (d *Device) Call(name string, args ...interface{}) (*FunctionResponse, error) {
 
-	var token AuthToken
-	var err error
+	token, err := d.token()
 
-	if d.AuthTokenProvider != nil {
-		token, err = d.AuthTokenProvider.AuthToken()
-
-		if err != nil {
-			return nil, err
-		}
-
-	} else if d.Token != nil {
-		token = d.Token
-	}
-
-	if token == nil {
-		return nil, fmt.Errorf("No access token or provider set")
+	if err != nil {
+		return nil, fmt.Errorf("[Device.Call] Token error: %s", err)
 	}
 
 	return d.CallWithToken(name, token, args...)
@@ -218,13 +229,4 @@ func (c *Device) CallWithToken(name string, token AuthToken, args ...interface{}
 
 	return &response.FunctionResponse, nil
 
-}
-
-func (c *Device) requestURL(terminus, token string) string {
-
-	return Endpoint(&APIUrl{
-		BaseUrl,
-		APIVersion,
-		"/devices/" + c.ID + "/" + terminus + "?access_token=" + token,
-	})
 }
