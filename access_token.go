@@ -21,6 +21,10 @@ func (t *AccessToken) Valid() error {
 		return fmt.Errorf("Expected an access token of non-zero length")
 	}
 
+	if t.ExpiresAt.Before(time.Now()) {
+		return fmt.Errorf("Token expired at %s", t.ExpiresAt.Format(time.RFC3339))
+	}
+
 	return nil
 }
 

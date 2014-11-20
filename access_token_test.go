@@ -1,34 +1,37 @@
 package spark
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
-func Test_OuthValidity(t *testing.T) {
+func Test_AccessTokenValidity(t *testing.T) {
 
 	responses := []struct {
-		response *OAuthResponse
+		response *AccessToken
 		expected bool
 	}{
 		{
-			&OAuthResponse{
+			&AccessToken{
 				"SOMETOKENSSTRING",
-				EXPECTED_ACCESS_TOKEN_TYPE,
-				77000,
+				time.Now().Add(1 * time.Hour),
+				DEFAULT_TOKEN_CLIENT,
 			},
 			true,
 		},
 		{
-			&OAuthResponse{
-				"SOMETOKENSSTRING",
-				EXPECTED_ACCESS_TOKEN_TYPE,
-				0,
+			&AccessToken{
+				"",
+				time.Now().Add(1 * time.Hour),
+				DEFAULT_TOKEN_CLIENT,
 			},
 			false,
 		},
 		{
-			&OAuthResponse{
-				"",
-				EXPECTED_ACCESS_TOKEN_TYPE,
-				1000,
+			&AccessToken{
+				"SOMETOKENSSTRING",
+				time.Now().Add(-1 * time.Hour),
+				DEFAULT_TOKEN_CLIENT,
 			},
 			false,
 		},

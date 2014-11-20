@@ -40,7 +40,7 @@ func (s *AccessTokenService) AuthToken() (AuthToken, error) {
 
 	if s.Token != nil {
 		// Check to see if it has expired
-		if s.Token.ExpiresAt.After(time.Now()) {
+		if s.Token.Valid() == nil {
 			return s.Token, nil
 		}
 	}
@@ -59,7 +59,7 @@ func (s *AccessTokenService) AuthToken() (AuthToken, error) {
 			continue
 		}
 
-		if token.ExpiresAt.After(time.Now()) {
+		if token.Valid() == nil {
 
 			// Store the token
 			s.Token = token
