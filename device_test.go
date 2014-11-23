@@ -5,6 +5,7 @@ import "testing"
 const (
 	ExampleVariable = "version"
 	ExampleFunc     = "toggleLamp"
+	PublishFunc     = "testPublish"
 )
 
 func validDevice(t *testing.T) *Device {
