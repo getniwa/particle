@@ -35,7 +35,7 @@ func Test_Listener(t *testing.T) {
 		}
 	}
 
-	l.Stop()
+	l.Close()
 }
 
 func Test_ListenerWithCustomChannel(t *testing.T) {
@@ -71,7 +71,7 @@ func Test_ListenerWithCustomChannel(t *testing.T) {
 		}
 	}
 
-	l.Stop()
+	l.Close()
 }
 
 func Test_ListenerForDevice(t *testing.T) {
@@ -103,7 +103,7 @@ func Test_ListenerForDevice(t *testing.T) {
 
 	}
 
-	l.Stop()
+	l.Close()
 }
 
 func Test_ListenerForDeviceWithPrefix(t *testing.T) {
@@ -138,5 +138,5 @@ func Test_ListenerForDeviceWithPrefix(t *testing.T) {
 		}
 	}
 
-	l.Stop()
+	l.Close()
 }
