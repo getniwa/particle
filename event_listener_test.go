@@ -38,6 +38,42 @@ func Test_Listener(t *testing.T) {
 	l.Stop()
 }
 
+func Test_ListenerWithCustomChannel(t *testing.T) {
+
+	c := make(EventChannel, 1)
+
+	l, err := NewEventListener(
+		aTokenService,
+		EventListenerOutputChannel(c),
+	)
+
+	if err != nil {
+		t.Fatalf("NewEventListener: %s", err)
+	}
+
+	// Run the listener
+	go l.Listen()
+
+	// Use the custom firmware endpoint to push something
+	// back into the listener
+	device := validDeviceWithTokenProvider(t, aTokenService)
+	device.Call(PublishFunc)
+
+	for event := range c {
+
+		if event.Name == EVENT_NAME {
+
+			if g, e := event.Data, EVENT_DATA; g != e {
+				t.Fatalf("event.Data: got %s, expected %s", g, e)
+			}
+
+			break
+		}
+	}
+
+	l.Stop()
+}
+
 func Test_ListenerForDevice(t *testing.T) {
 
 	device := validDeviceWithTokenProvider(t, aTokenService)

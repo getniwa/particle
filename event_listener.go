@@ -13,7 +13,7 @@ type EventChannel chan Event
 type ErrorChannel chan error
 type EventListenerConfiguration func(*EventListener) error
 
-// A subscriber that listents to publication events
+// A subscriber that listens to publication events
 type EventListener struct {
 	OutputChan        EventChannel
 	ErrorChan         ErrorChannel
@@ -240,8 +240,11 @@ func (e *EventListener) Listen() error {
 }
 
 func (e *EventListener) Stop() {
+	e.running = false
+}
+
+func (e *EventListener) Close() {
 	close(e.ErrorChan)
 	close(e.OutputChan)
-
-	e.running = false
+	e.Stop()
 }
