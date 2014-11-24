@@ -200,8 +200,7 @@ func (e *EventListener) Listen() error {
 		}
 
 		if err != nil {
-			e.error("error during resp.Body read:%s\n", err)
-			continue
+			return e.error("error during resp.Body read:%s\n", err)
 		}
 
 		switch {
