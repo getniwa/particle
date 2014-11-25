@@ -154,7 +154,7 @@ func (e *EventListener) connect() error {
 	}
 
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("EventListener.connect(): response status code %d\n", resp.StatusCode)
+		return fmt.Errorf("EventListener.connect(): response status code %d", resp.StatusCode)
 	}
 
 	// Store the response
@@ -200,7 +200,7 @@ func (e *EventListener) Listen() error {
 		}
 
 		if err != nil {
-			return e.error("error during resp.Body read:%s\n", err)
+			return e.error("error during resp.Body read:%s", err)
 		}
 
 		switch {
