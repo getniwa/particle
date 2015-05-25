@@ -1,4 +1,4 @@
-package spark
+package particle
 
 const (
 	UserName = "YourEmail@here.com"
