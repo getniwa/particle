@@ -1,8 +1,8 @@
-CORE=yttrium
+CORE=YOUR_CORE_NAME
 GITHASH=$(shell git describe --tags --always)
 OUTPUT=firmware-$(GITHASH).bin
 MAIN=main.ino
-SPARK=spark
+SPARK=particle
 
 all: compile flash
 

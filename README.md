@@ -1,6 +1,6 @@
-#Spark
+#Particle
 
-Golang bindings for the Spark Cloud API. This is a work in progress, but will be released and properly documented very shortly.
+Golang bindings for the Particle Cloud API. This is a work in progress, but will be released and properly documented very shortly.
 
 ##Acknowledgements 
 

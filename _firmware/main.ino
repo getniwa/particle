@@ -1,5 +1,5 @@
 /**
-  Testing firmware for the Go implemention of the Spark Cloud API.
+  Testing firmware for the Go implemention of the Particle Cloud API.
   See https://github.com/getniwa/spark for more details
 */
 

@@ -74,12 +74,14 @@ func (s *AccessTokenService) AuthToken() (AuthToken, error) {
 	response, err2 := s.CreateAccessToken()
 
 	if err2 != nil {
-		return nil, fmt.Errorf("[CreateAccessToken]: ListAllAccessTokens failed (%s)", err2)
+		return nil, fmt.Errorf("[CreateAccessToken]: List	AllAccessTokens failed (%s)", err2)
 	}
 
 	s.Token.TokenValue = response.AccessToken
-	s.Token.ExpiresAt = time.Now().Add(time.Duration(response.ExpiresIn) * time.Second)
 	s.Token.Client = DEFAULT_TOKEN_CLIENT
+
+	expiry := time.Now().Add(time.Duration(response.ExpiresIn) * time.Second)
+	s.Token.ExpiresAt = &expiry
 
 	return s.Token, nil
 }

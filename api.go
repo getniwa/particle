@@ -2,10 +2,10 @@ package spark
 
 const (
 	APIVersion        = "/v1"
-	BaseUrl           = "https://api.spark.io"
+	BaseUrl           = "https://api.particle.io"
 	MaxVariableLen    = 12
-	BasicAuthId       = "spark"
-	BasicAuthPassword = "spark"
+	BasicAuthId       = "particle"
+	BasicAuthPassword = "particle"
 )
 
 type APIUrl struct {

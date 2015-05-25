@@ -7,6 +7,11 @@ import (
 
 func Test_AccessTokenValidity(t *testing.T) {
 
+	in_one_hour, one_hour_ago := time.Now(), time.Now()
+
+	in_one_hour = in_one_hour.Add(1 * time.Hour)
+	one_hour_ago = one_hour_ago.Add(-1 * time.Hour)
+
 	responses := []struct {
 		response *AccessToken
 		expected bool
@@ -14,7 +19,7 @@ func Test_AccessTokenValidity(t *testing.T) {
 		{
 			&AccessToken{
 				"SOMETOKENSSTRING",
-				time.Now().Add(1 * time.Hour),
+				&in_one_hour,
 				DEFAULT_TOKEN_CLIENT,
 			},
 			true,
@@ -22,7 +27,7 @@ func Test_AccessTokenValidity(t *testing.T) {
 		{
 			&AccessToken{
 				"",
-				time.Now().Add(1 * time.Hour),
+				&in_one_hour,
 				DEFAULT_TOKEN_CLIENT,
 			},
 			false,
@@ -30,7 +35,7 @@ func Test_AccessTokenValidity(t *testing.T) {
 		{
 			&AccessToken{
 				"SOMETOKENSSTRING",
-				time.Now().Add(-1 * time.Hour),
+				&one_hour_ago,
 				DEFAULT_TOKEN_CLIENT,
 			},
 			false,

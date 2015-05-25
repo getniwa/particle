@@ -6,9 +6,9 @@ import (
 )
 
 type AccessToken struct {
-	TokenValue string    `json:"token"`
-	ExpiresAt  time.Time `json:"expires_at"`
-	Client     string    `json:"client"`
+	TokenValue string     `json:"token"`
+	ExpiresAt  *time.Time `json:"expires_at,omitempty"`
+	Client     string     `json:"client"`
 }
 
 func NewAccessToken() *AccessToken {
