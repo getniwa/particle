@@ -1,4 +1,4 @@
-package spark
+package particle
 
 import (
 	"encoding/json"

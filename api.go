@@ -1,4 +1,4 @@
-package spark
+package particle
 
 const (
 	APIVersion        = "/v1"

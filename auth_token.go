@@ -1,4 +1,4 @@
-package spark
+package particle
 
 type AuthToken interface {
 	Valid() error

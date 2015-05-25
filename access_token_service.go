@@ -1,4 +1,4 @@
-package spark
+package particle
 
 import (
 	"encoding/json"
@@ -54,7 +54,7 @@ func (s *AccessTokenService) AuthToken() (AuthToken, error) {
 
 	for _, token := range list {
 
-		// Only use 'spark' token
+		// Only use 'particle' token
 		if token.Client != DEFAULT_TOKEN_CLIENT {
 			continue
 		}

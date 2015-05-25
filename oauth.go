@@ -1,11 +1,11 @@
-package spark
+package particle
 
 import "fmt"
 
 const (
 	GRANT_TYPE                 = "password"
 	EXPECTED_ACCESS_TOKEN_TYPE = "bearer"
-	DEFAULT_TOKEN_CLIENT       = "spark"
+	DEFAULT_TOKEN_CLIENT       = "particle"
 	EXPIRY_TIME_THRESHOLD      = 10
 )
 
